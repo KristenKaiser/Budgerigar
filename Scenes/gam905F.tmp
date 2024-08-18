@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://fxfdu55nrbn0"]
+
+[ext_resource type="Script" path="res://Scripts/Flock.gd" id="3_uiu44"]
+
+[node name="Game" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(4, 4)
+
+[node name="Flock" type="Node" parent="."]
+script = ExtResource("3_uiu44")

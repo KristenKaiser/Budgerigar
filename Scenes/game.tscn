@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://fxfdu55nrbn0"]
+
+[ext_resource type="Script" path="res://Scripts/Global.gd" id="1_u7i7d"]
+[ext_resource type="Script" path="res://Scenes/Window.gd" id="2_mlyd8"]
+[ext_resource type="Script" path="res://Scripts/Flock.gd" id="3_uiu44"]
+[ext_resource type="Script" path="res://Scenes/Camera2D.gd" id="3_x67m3"]
+[ext_resource type="Texture2D" uid="uid://hqugjchyr672" path="res://Sprites/city.png" id="5_udvt3"]
+
+[node name="Game" type="Node2D"]
+
+[node name="Global" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("1_u7i7d")
+
+[node name="Window" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_mlyd8")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.5, 1.5)
+script = ExtResource("3_x67m3")
+
+[node name="Flock" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_uiu44")
+
+[node name="City" type="Sprite2D" parent="."]
+scale = Vector2(1.29038, 1.34145)
+texture = ExtResource("5_udvt3")

@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://r7gynpsoh4km"]
+
+[ext_resource type="PackedScene" uid="uid://b8ier5ehakxa0" path="res://Sprites/animated_sprite_2d.tscn" id="1_tyenx"]
+
+[node name="Budgie" type="Node"]
+
+[node name="body" type="CharacterBody2D" parent="."]
+
+[node name="sprite" parent="body" instance=ExtResource("1_tyenx")]
+
+[node name="collisionBox" type="CollisionPolygon2D" parent="body"]
+polygon = PackedVector2Array(8, -1, 8, -4, 0, -9, -8, -4, -8, -1, 0, 9)

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://4ocpyjjqenje"]
+
+[ext_resource type="PackedScene" uid="uid://b8ier5ehakxa0" path="res://Sprites/animated_sprite_2d.tscn" id="1_tyenx"]
+
+[node name="Budgie" type="Node2D"]
+
+[node name="AnimatedSprite2D" parent="." instance=ExtResource("1_tyenx")]

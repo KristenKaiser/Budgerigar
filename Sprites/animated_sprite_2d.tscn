@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8ier5ehakxa0"]
+
+[ext_resource type="Texture2D" uid="uid://bdlxnj6r58fqu" path="res://Sprites/farBudgieSprite.png" id="1_rn8bp"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ecd83"]
+atlas = ExtResource("1_rn8bp")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jjaf4"]
+atlas = ExtResource("1_rn8bp")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_e24lt"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ecd83")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jjaf4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 12.0
+}]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_e24lt")
+autoplay = "default"
