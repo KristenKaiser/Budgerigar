@@ -1,10 +1,13 @@
 extends Node
-class_name Budgie
+#extends  Flock
+#class_name Budgie
 
-const speed = 1
+const speed = 4
 const minForce = -1.0
 const maxForce= 1.0
+const maxVelocity : Vector2 = Vector2(3,3)
 #const maxSpeed = 5
+var id
 var body
 var perception = 64
 var position
@@ -13,10 +16,10 @@ var acceleration
 var cohesionStrength = 1.25
 var alignStrength = 1.0
 var seperationStrength = 3.0
-var steeringStrength = 7.0
+var mouseStrength = 6.0
 
-var cohesionPerception = 64
-var alignPerception = 64
+#var cohesionPerception = 64
+#var alignPerception = 64
 var seperationPerception = 16
 
 var oldAcceleration = Vector2(0,0)
@@ -27,25 +30,30 @@ func _ready():
 	body = find_child("body")
 	position = Vector2(0,0)
 	velocity = Vector2(0,0)
-	#acceleration = align(findFriends())
 	
+#func _physics_process(delta):
+func _process(delta):
+	if Engine.get_process_frames() % 4 == 0 && id % 4 == 0 \
+	|| Engine.get_process_frames() % 4 == 1 && id % 4 == 1 \
+	|| Engine.get_process_frames() % 4 == 2 && id % 4 == 2 \
+	|| Engine.get_process_frames() % 4 == 3 && id % 4 == 3 :
+		acceleration = getAcceleration()	
+		velocity += acceleration * delta * speed
+		velocity = velocity.clamp(-maxVelocity, maxVelocity)
+		setRotation()
+	position += velocity
+	body.position = position 
+	body.velocity = velocity
 
-func _physics_process(delta):
+func getAcceleration() -> Vector2:
 	var friends = findFriends()
-	acceleration = Vector2(0.0,0.0)
+	var acceleration = Vector2(0.0,0.0)
 	acceleration += cohesion(friends)
 	acceleration += align(friends) 
 	acceleration += seperation(friends)
 	acceleration += chaseMouse()
 	acceleration = acceleration.normalized()
-	velocity += acceleration * delta * speed
-	setRotation()
-	#print(velocity)
-	position += velocity
-	body.position = position 
-	body.velocity = velocity
-	chaseMouse()
-
+	return acceleration
 
 func findFriends():
 	var flockArray = get_parent().array
@@ -120,9 +128,9 @@ func chaseMouse():
 	var dist = body.position.distance_to(mousePos)
 	var diff = mousePos - body.position 
 	steering = diff/dist
-	var randStrength = randf() * steeringStrength
+	var randStrength = randf() * mouseStrength
 	steering *= randStrength
-	steering = steering.clamp(Vector2(minForce * steeringStrength , minForce * steeringStrength ), Vector2(maxForce * steeringStrength , maxForce * steeringStrength ))
+	steering = steering.clamp(Vector2(minForce * mouseStrength , minForce * mouseStrength ), Vector2(maxForce * mouseStrength , maxForce * mouseStrength ))
 	return steering
 
 		

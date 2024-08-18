@@ -1,27 +1,35 @@
 
 extends Node
+#class_name Flock
+
 const spawnDistanceHalf_I = 9
 const bird_O = preload("res://Scenes/budgie.tscn")
 const birdScript = preload("res://Scripts/budgie.gd")
-const xWindowMarginRatio = 0.50
-const yWindowMarginRatio = 0.50
+const xWindowMarginRatio = 0.25
+const yWindowMarginRatio = 0.25
 @onready var window = %Window
-var countBudgies_I = 1
-var array = []
+var countBudgies_I = 256
+var array: Array[Node]
 const velocityMin = -1.5
 const velocityMax = 1.5
 var flockCenter : Vector2 = Vector2(0,0)
 var centerDot
 
+
+
+func getFlockArray() -> Array[Node] :
+	return array
+	
 func _ready():
 	#setWindowEdges()
 	for i in countBudgies_I: 
-		createBirds()		
+		createBirds(i)		
 
 
-func createBirds():
+func createBirds(id):
 	var inst = bird_O.instantiate()
 	inst.set_script(birdScript)
+	inst.id = id
 	add_child(inst)
 	array.push_back(inst)
 	inst.body.position = randPosition()
@@ -62,12 +70,14 @@ func randPosition():
 			break
 	return Vector2(x, y)
 	
-func getCenter():
-	var sum = Vector2()
+func getCenter() -> Vector2:
+	var sum: Vector2 = Vector2(0,0)
 	var total = 0.0
 	for bird in array:
 		sum += bird.body.position
 		total += 1
 	sum = sum/total
 	return sum
+	
+
 
