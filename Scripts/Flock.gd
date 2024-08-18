@@ -80,5 +80,3 @@ func getCenter() -> Vector2:
 	sum = sum/total
 	return sum
 	
-
-

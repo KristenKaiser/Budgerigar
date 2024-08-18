@@ -16,4 +16,3 @@ func setWindowEdges():
 	xMin = (-(rect.size.x / 2 /camera.get_zoom().x) + rect.position.x) as int
 	yMax = ((rect.size.y / 2 /camera.get_zoom().y) + rect.position.y) as int
 	yMin = (-(rect.size.y / 2 /camera.get_zoom().y) + rect.position.y) as int
-

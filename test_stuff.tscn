@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://ykkyma1xnk2s"]
 
-[ext_resource type="Script" path="res://Scenes/CharacterBody2D.gd" id="1_ny1t6"]
+[ext_resource type="Script" path="res://Scripts/CharacterBody2D.gd" id="1_ny1t6"]
 [ext_resource type="PackedScene" uid="uid://b8ier5ehakxa0" path="res://Sprites/animated_sprite_2d.tscn" id="2_8etwl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_84vhp"]
