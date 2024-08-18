@@ -1,12 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://fxfdu55nrbn0"]
+[gd_scene load_steps=10 format=3 uid="uid://fxfdu55nrbn0"]
 
 [ext_resource type="Script" path="res://Scripts/Global.gd" id="1_u7i7d"]
 [ext_resource type="Script" path="res://Scenes/Window.gd" id="2_mlyd8"]
 [ext_resource type="Script" path="res://Scripts/Flock.gd" id="3_uiu44"]
 [ext_resource type="Script" path="res://Scenes/Camera2D.gd" id="3_x67m3"]
 [ext_resource type="Texture2D" uid="uid://hqugjchyr672" path="res://Sprites/city.png" id="5_udvt3"]
+[ext_resource type="Texture2D" uid="uid://b7t6rhfyun3mf" path="res://Sprites/testBackground/treeandbuilding_noOutline.png" id="6_8i7ts"]
+[ext_resource type="Texture2D" uid="uid://cf2od4g3xwrij" path="res://Sprites/testBackground/treeandbuilding_outline.png" id="7_4e5bl"]
+[ext_resource type="Texture2D" uid="uid://dlyxfokqy6w8x" path="res://Sprites/testBackground/tree_lightOut.png" id="8_epuca"]
+[ext_resource type="Texture2D" uid="uid://bqqt4s61j6fpq" path="res://Sprites/testBackground/tree_noOut.png" id="9_3fbkj"]
 
 [node name="Game" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("3_x67m3")
 
 [node name="Global" type="Node" parent="."]
 unique_name_in_owner = true
@@ -16,15 +23,29 @@ script = ExtResource("1_u7i7d")
 unique_name_in_owner = true
 script = ExtResource("2_mlyd8")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(1.12, 1.12)
-script = ExtResource("3_x67m3")
-
 [node name="Flock" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("3_uiu44")
 
 [node name="City" type="Sprite2D" parent="."]
+visible = false
 position = Vector2(-187.312, -203.672)
 scale = Vector2(3.46663, 3.46507)
 texture = ExtResource("5_udvt3")
+
+[node name="TreeandbuildingNoOutline" type="Sprite2D" parent="."]
+position = Vector2(-328, -171)
+texture = ExtResource("6_8i7ts")
+
+[node name="TreeandbuildingOutline" type="Sprite2D" parent="."]
+position = Vector2(358, -198)
+texture = ExtResource("7_4e5bl")
+
+[node name="TreeLightOut" type="Sprite2D" parent="."]
+position = Vector2(-328, 475)
+texture = ExtResource("8_epuca")
+
+[node name="TreeNoOut" type="Sprite2D" parent="."]
+position = Vector2(353, 475)
+scale = Vector2(1.99219, 2.00391)
+texture = ExtResource("9_3fbkj")

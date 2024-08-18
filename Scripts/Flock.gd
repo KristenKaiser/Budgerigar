@@ -1,9 +1,10 @@
 
 extends Node
 #class_name Flock
-
+const maxFlockSize = 256
 const spawnDistanceHalf_I = 9
 const bird_O = preload("res://Scenes/budgie.tscn")
+"res://Scenes/node_2d_budgie.tscn"
 const birdScript = preload("res://Scripts/budgie.gd")
 const xWindowMarginRatio = 0.25
 const yWindowMarginRatio = 0.25

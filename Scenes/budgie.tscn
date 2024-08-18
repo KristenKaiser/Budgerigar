@@ -7,6 +7,3 @@
 [node name="body" type="CharacterBody2D" parent="."]
 
 [node name="sprite" parent="body" instance=ExtResource("1_tyenx")]
-
-[node name="collisionBox" type="CollisionPolygon2D" parent="body"]
-polygon = PackedVector2Array(8, -1, 8, -4, 0, -9, -8, -4, -8, -1, 0, 9)
