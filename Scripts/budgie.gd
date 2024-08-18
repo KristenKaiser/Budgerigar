@@ -1,31 +1,23 @@
 extends Node
-#extends  Flock
-#class_name Budgie
 
 const speed = 5
-
 const minForce = -1.0
 const maxForce= 1.0
 const maxVelocity : Vector2 = Vector2(5,5)
-#const maxSpeed = 5
+const minVelocity = .5
 var id
 var body
-var perception = 64
-var seperationPerception = 16
-#var cohesionPerception = 128
-
+var perception = 128
+var seperationPerception = 8
+var cohesionPerception = 128
+var alignPerception = 64
 var position
 var velocity 
 var acceleration
 var cohesionStrength = 1.0
 var alignStrength = 1.0
-var seperationStrength = 2.0
-var mouseStrength = 1.0
-
-#var cohesionPerception = 64
-#var alignPerception = 64
-
-
+var seperationStrength = 10.0
+var mouseStrength = 8.0
 var oldAcceleration = Vector2(0,0)
 var autopilot = true
 var lastMousePosition = Vector2(64.0, 0.0)
@@ -35,7 +27,6 @@ func _ready():
 	position = Vector2(0,0)
 	velocity = Vector2(0,0)
 	
-#func _physics_process(delta):
 func _process(delta):
 	if Engine.get_process_frames() % 4 == 0 && id % 4 == 0 \
 	|| Engine.get_process_frames() % 4 == 1 && id % 4 == 1 \
@@ -43,7 +34,6 @@ func _process(delta):
 	|| Engine.get_process_frames() % 4 == 3 && id % 4 == 3 :
 		acceleration = getAcceleration()	
 		velocity += acceleration * delta * speed
-		#print(velocity)
 	velocity = velocity.clamp(-maxVelocity, maxVelocity)
 	setRotation()
 	position += velocity
@@ -73,39 +63,38 @@ func align(friends):
 	var steering = Vector2(0,0)
 	var total = 0
 	for friend in friends:
+		var dist = body.position.distance_to(friend.body.position)
+		if abs(dist) < alignPerception:
 			steering += friend.body.velocity
 			total += 1
 	if total == 0: 
 		return acceleration
 	steering = Vector2(steering / total)
-	#steering *= alignStrength
 	steering -= velocity
-	steering = steering.clamp(Vector2(minForce * alignStrength, minForce * alignStrength), Vector2(maxForce * alignStrength, maxForce * alignStrength))
 	return steering
 
 func cohesion(friends):
 	var steering = Vector2(0,0)
 	var total = 0
 	for friend in friends:
-		steering += friend.body.position
-		total += 1
+		var dist = body.position.distance_to(friend.body.position)
+		if abs(dist) < alignPerception:
+			steering += friend.body.position
+			total += 1
 	if total == 0: 
 		return acceleration
 	steering = Vector2(steering / total)
 	steering -= position
 	steering /= perception 
-	#steering *= cohesionStrength
 	steering -= velocity
-	steering = steering.clamp(Vector2(minForce * cohesionStrength, minForce * cohesionStrength), Vector2(maxForce * cohesionStrength, maxForce * cohesionStrength))
 	return steering
-	
 	
 func seperation(friends):
 	var steering = Vector2(0,0)
 	var total = 0
 	for friend in friends:
 		var dist = body.position.distance_to(friend.body.position)
-		if friend != self && abs(dist) < seperationPerception:
+		if abs(dist) < seperationPerception:
 			var diff = body.position - friend.body.position
 			diff = diff/dist
 			steering += diff
@@ -113,9 +102,7 @@ func seperation(friends):
 	if total == 0: 
 		return acceleration
 	steering = Vector2(steering / total)
-	#steering *= seperationStrength 
 	steering -= velocity
-	steering = steering.clamp(Vector2(minForce * seperationStrength , minForce * seperationStrength ), Vector2(maxForce * seperationStrength , maxForce * seperationStrength ))
 	return steering
 	
 func chaseMouse():
@@ -125,7 +112,6 @@ func chaseMouse():
 	var halfRect = rect.size / 2
 	var steering = Vector2(0,0)
 	if Input.is_mouse_button_pressed( MOUSE_BUTTON_LEFT ):
-		#autopilot = false
 		mousePos = get_viewport().get_mouse_position() - halfRect
 		lastMousePosition = mousePos
 	
@@ -134,15 +120,8 @@ func chaseMouse():
 	var diff = mousePos - body.position 
 	steering = diff/dist
 	var randStrength = randf() * mouseStrength
-	#steering *= randStrength
 	steering = steering.clamp(Vector2(minForce * mouseStrength , minForce * mouseStrength ), Vector2(maxForce * mouseStrength , maxForce * mouseStrength ))
 	return steering
 
-		
 func setRotation():
 	body.rotation = velocity.angle() + deg_to_rad(90.0)
-	
-		
-		
-
-	
