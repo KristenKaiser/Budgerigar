@@ -10,8 +10,8 @@ scale = Vector2(1.5, 1.5)
 
 [node name="sprite" parent="body" instance=ExtResource("1_tyenx")]
 
-[node name="Shadow" type="Sprite2D" parent="body/sprite"]
+[node name="Shadow" type="Sprite2D" parent="body"]
+modulate = Color(1, 1, 1, 0.454902)
 z_index = -1
-position = Vector2(69.3333, 0)
-scale = Vector2(0.767, 0.767)
+position = Vector2(10, -0.666667)
 texture = ExtResource("2_4qe2e")

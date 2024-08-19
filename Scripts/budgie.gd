@@ -7,6 +7,8 @@ const maxVelocity : Vector2 = Vector2(5,5)
 const minVelocity = .5
 var id
 var body
+var shadow
+var shadowOffset : Vector2 = Vector2(0, 140)
 var perception = 128
 var seperationPerception = 8
 var cohesionPerception = 128
@@ -23,7 +25,10 @@ var autopilot = true
 var lastMousePosition = Vector2(64.0, 0.0)
 
 func _ready():
+
 	body = find_child("body")
+	shadow = body.find_child("Shadow")
+	
 	position = Vector2(0,0)
 	velocity = Vector2(0,0)
 	
@@ -39,6 +44,7 @@ func _process(delta):
 	position += velocity
 	body.position = position 
 	body.velocity = velocity
+	moveShadow()
 
 func getAcceleration() -> Vector2:
 	var friends = findFriends()
@@ -125,3 +131,8 @@ func chaseMouse():
 
 func setRotation():
 	body.rotation = velocity.angle() + deg_to_rad(90.0)
+	
+func moveShadow():
+	pass
+	#print((velocity.normalized() ))
+	shadow.set_global_position(body.global_position + shadowOffset)
