@@ -9,7 +9,7 @@ const birdScript = preload("res://Scripts/budgie.gd")
 const xWindowMarginRatio = 0.25
 const yWindowMarginRatio = 0.25
 @onready var window = %Window
-var countBudgies_I = 5
+var countBudgies_I = 512
 var array: Array[Node]
 const velocityMin = -1.5
 const velocityMax = 1.5

@@ -21,7 +21,7 @@ var cohesionStrength = 1.0
 var alignStrength = 1.0
 var seperationStrength = 10.0
 var mouseStrength = 8.0
-var oldAcceleration = Vector2(0,0)
+var oldAcceleration = Vector2.ZERO
 var autopilot = true
 var lastMousePosition = Vector2(64.0, 0.0)
 var baseAnimSpeed = 1.5
@@ -33,8 +33,8 @@ func _ready():
 	sprite = find_child("sprite")
 	shadow = body.find_child("Shadow")
 	
-	position = Vector2(0,0)
-	velocity = Vector2(0,0)
+	position = Vector2.ZERO
+	velocity = Vector2.ZERO
 	
 	#sprite.set_speed_scale(0.9+(randf()*0.2))
 	
@@ -62,7 +62,7 @@ func findFriends() -> Array:
 	)
 
 func align(friends):
-	var steering = Vector2(0,0)
+	var steering = Vector2.ZERO
 	var total = 0
 	for friend in friends:
 		var dist = body.position.distance_squared_to(friend.body.position)
@@ -76,7 +76,7 @@ func align(friends):
 	return steering
 
 func cohesion(friends):
-	var steering = Vector2(0,0)
+	var steering = Vector2.ZERO
 	var total = 0
 	for friend in friends:
 		var dist = body.position.distance_squared_to(friend.body.position)
@@ -92,7 +92,7 @@ func cohesion(friends):
 	return steering
 	
 func seperation(friends):
-	var steering = Vector2(0,0)
+	var steering = Vector2.ZERO
 	var total = 0
 	for friend in friends:
 		var dist = body.position.distance_squared_to(friend.body.position)
@@ -112,7 +112,7 @@ func chaseMouse():
 	var viewport = get_viewport()
 	var rect = viewport.get_visible_rect()
 	var halfRect = rect.size / 2
-	var steering = Vector2(0,0)
+	var steering = Vector2.ZERO
 	if Input.is_mouse_button_pressed( MOUSE_BUTTON_LEFT ):
 		mousePos = get_viewport().get_mouse_position() - halfRect
 		lastMousePosition = mousePos

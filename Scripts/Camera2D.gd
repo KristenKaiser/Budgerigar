@@ -21,4 +21,3 @@ func zoomCamera():
 	#var zoomScale = 1.0 - (flockSize/flock.maxFlockSize)
 	#print(zoomScale)
 	#set_zoom(((maxZoom - minZoom) * zoomScale) + minZoom)
-	
