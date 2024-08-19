@@ -7,6 +7,7 @@ const maxVelocity : Vector2 = Vector2(5,5)
 const minVelocity = .5
 var id
 var body
+var sprite
 var shadow
 var shadowOffset : Vector2 = Vector2(0, 140)
 var perception = 128
@@ -23,53 +24,48 @@ var mouseStrength = 8.0
 var oldAcceleration = Vector2(0,0)
 var autopilot = true
 var lastMousePosition = Vector2(64.0, 0.0)
+var baseAnimSpeed = 1.5
+var animScale = 0.25
 
 func _ready():
 
 	body = find_child("body")
+	sprite = find_child("sprite")
 	shadow = body.find_child("Shadow")
 	
 	position = Vector2(0,0)
 	velocity = Vector2(0,0)
 	
+	#sprite.set_speed_scale(0.9+(randf()*0.2))
+	
 func _process(delta):
-	if Engine.get_process_frames() % 4 == 0 && id % 4 == 0 \
-	|| Engine.get_process_frames() % 4 == 1 && id % 4 == 1 \
-	|| Engine.get_process_frames() % 4 == 2 && id % 4 == 2 \
-	|| Engine.get_process_frames() % 4 == 3 && id % 4 == 3 :
-		acceleration = getAcceleration()	
+	if Engine.get_physics_frames() % 4 == id % 4:
+		acceleration = getAcceleration()
 		velocity += acceleration * delta * speed
 	velocity = velocity.clamp(-maxVelocity, maxVelocity)
 	setRotation()
-	position += velocity
-	body.position = position 
-	body.velocity = velocity
+	body.position += velocity
+	sprite.set_speed_scale(baseAnimSpeed-(velocity.length()*animScale)+(randf()*0.1))
 	moveShadow()
 
 func getAcceleration() -> Vector2:
 	var friends = findFriends()
-	var acc = Vector2(0.0,0.0)
-	acc += cohesion(friends).normalized() * cohesionStrength
-	acc += align(friends) .normalized() * alignStrength
-	acc += seperation(friends).normalized() * seperationStrength
-	acc += chaseMouse().normalized() * mouseStrength
-	acc = acc.normalized()
-	return acc
+	return (cohesion(friends).normalized() * cohesionStrength +
+			align(friends).normalized() * alignStrength +
+			seperation(friends).normalized() * seperationStrength +
+			chaseMouse().normalized() * mouseStrength).normalized()
 
-func findFriends():
+func findFriends() -> Array:
 	var flockArray = get_parent().array
-	var friends = []
-	for friend in flockArray:
-		var dist = body.position.distance_to(friend.body.position)
-		if friend != self && abs(dist) < perception:
-			friends.push_back(friend)
-	return friends
+	return flockArray.filter(func(friend): 
+		return friend != self and body.position.distance_squared_to(friend.body.position) < perception * perception
+	)
 
 func align(friends):
 	var steering = Vector2(0,0)
 	var total = 0
 	for friend in friends:
-		var dist = body.position.distance_to(friend.body.position)
+		var dist = body.position.distance_squared_to(friend.body.position)
 		if abs(dist) < alignPerception:
 			steering += friend.body.velocity
 			total += 1
@@ -83,7 +79,7 @@ func cohesion(friends):
 	var steering = Vector2(0,0)
 	var total = 0
 	for friend in friends:
-		var dist = body.position.distance_to(friend.body.position)
+		var dist = body.position.distance_squared_to(friend.body.position)
 		if abs(dist) < alignPerception:
 			steering += friend.body.position
 			total += 1
@@ -99,7 +95,7 @@ func seperation(friends):
 	var steering = Vector2(0,0)
 	var total = 0
 	for friend in friends:
-		var dist = body.position.distance_to(friend.body.position)
+		var dist = body.position.distance_squared_to(friend.body.position)
 		if abs(dist) < seperationPerception:
 			var diff = body.position - friend.body.position
 			diff = diff/dist
@@ -122,7 +118,7 @@ func chaseMouse():
 		lastMousePosition = mousePos
 	
 	mousePos += get_parent().getCenter() 
-	var dist = body.position.distance_to(mousePos)
+	var dist = body.position.distance_squared_to(mousePos)
 	var diff = mousePos - body.position 
 	steering = diff/dist
 	var randStrength = randf() * mouseStrength
