@@ -21,7 +21,7 @@ var isWorldGenerating : bool = true
 var worldGenerateThread : Thread
 var flockCenter : Vector2 = Vector2(0,0)
 
-var blankTile : TerrainTile
+#var blankTile : TerrainTile
 
 enum TileType {WATER, DIRT, ROCK, BRUSH, OTHER}
 
@@ -41,12 +41,12 @@ var greebleArray : Array = []
 func defineTerrainItems():
 	var tile
 	
-#BLANKTILE
-	blankTile = TerrainTile.new()
-	blankTile.name = "blank"
-	blankTile.ratio = 0
-	blankTile.tileSetCoord = Vector2(-1,-1)
-	blankTile.type = TileType.OTHER
+##BLANKTILE
+	#blankTile = TerrainTile.new()
+	#blankTile.name = "blank"
+	#blankTile.ratio = 0
+	#blankTile.tileSetCoord = Vector2(-1,-1)
+	#blankTile.type = TileType.OTHER
 	
 #Water 20%
 	tile = TerrainTile.new()
@@ -258,7 +258,9 @@ func setRangesBackward(a: Array, endPosition : int = 100):
 		blankTile.levelEnd = sum
 		a.push_back(blankTile)
 
-func setRangeFill(a:Array, min : float = 0, max : float = 1):
+
+
+func setRangeFill(a:Array, minimum : float = 0, maximum : float = 1):
 	
 	var ratioSum : float = 0
 	var sum : float = 0.0
@@ -266,17 +268,17 @@ func setRangeFill(a:Array, min : float = 0, max : float = 1):
 		ratioSum += item.ratio
 	
 #add blank to beggining of array if min greater than 0
-	if min > 0: 
+	if minimum > 0: 
 		var blankTileStart = TerrainTile.new()
-		blankTileStart.levelEnd = min
+		blankTileStart.levelEnd = minimum
 		a.push_front(blankTileStart)
-		sum = min
+		sum = minimum
 #get end markers 
 	for item in a:
-		sum += (item.ratio/ratioSum) * (max - min)
+		sum += (item.ratio/ratioSum) * (maximum - minimum)
 		item.levelEnd = sum
 #add blank to end if max not 1
-	if max < 1:
+	if maximum < 1:
 		var blankTileEnd = TerrainTile.new()
 		blankTileEnd.levelEnd = 1
 		a.push_back(blankTileEnd)
@@ -289,6 +291,8 @@ func invertArray(a : Array):
 	for item in a:
 		inverted.push_front(item)
 	return inverted
+
+
 
 func _ready() -> void:
 	defineTerrainItems()
@@ -307,36 +311,35 @@ func _ready() -> void:
 	setRangeFill(waterArray, .50, 1)
 	setRangeFill(dirtArray)
 		 
-	#var startMapRect : Rect2 = Rect2(-readyWidth/2, -readyHeight/2, readyWidth, readyHeight)
-	#build_map(startMapRect)
+
+	var startMapRect : Rect2 = Rect2(-readyWidth/2.0 , -readyHeight/2.0, readyWidth, readyHeight)
+	build_map(startMapRect)
+
+
 	
-	worldGenerateThread = Thread.new()
-	worldGenerateThread.start(_thread_function)
+
+func _process(_delta: float) -> void:
+		var viewportRect : Rect2 = get_viewport().get_visible_rect()
+		var generateSize : Vector2 = viewportRect.size * pregenAreaMultiply
+		var viewportQuadratic : float = (generateSize.x + generateSize.y) / 2
+		var generateOrgin : Vector2  = flock.getCenter() - (generateSize / 2)
+		if abs(flockCenter.distance_to(flock.getCenter())) > (viewportQuadratic * .5) :
+			print("generate")
+			flockCenter = flock.getCenter()
+			var generateRect : Rect2 = Rect2(generateOrgin, generateSize)
+			build_map(generateRect)
 
 
 func build_map(rect : Rect2):
 	generateMap(WaterMap, waterArray, rect, -1, -.09)
 	generateMap(dirtMap, dirtArray, rect, -2, 2)
 
-func _thread_function():
-	while isWorldGenerating:
-		#print("generating world")
-		var viewportRect : Rect2 = get_viewport_rect()
-		#var generateSize : Vector2 = viewportRect.size * pregenAreaMultiply
-		#var viewportQuadratic : float = (generateSize.x + generateSize.y) / 2
-		#var generateOrgin : Vector2  = flock.getCenter() - (generateSize / 2)
-		#if abs(flockCenter.distance_to(flock.getCenter())) > (viewportQuadratic * .1) :
-			#print("generate")
-			#flockCenter = flock.getCenter()
-			#var generateRect : Rect2 = Rect2(generateOrgin, generateSize)
-			##build_map(generateRect)
-	
 
 func generateMap(map : FastNoiseLite, tileArray: Array, rect: Rect2, noiseRangeMin : float = -1, noiseRangeMax : float = 1, isInvert : bool = false):
-	var width = rect.size.x
-	var height = rect.size.y
-	var widthOffset = rect.position.x
-	var heightOffset = rect.position.y
+	var width : int = rect.size.x as int
+	var height : int = rect.size.y as int
+	var widthOffset : int = rect.position.x as int
+	var heightOffset : int  = rect.position.y as int
 	for x in width:
 		for y in height:
 			if !get_cell_tile_data(Vector2i(x + widthOffset, y + heightOffset)):
@@ -348,9 +351,9 @@ func generateMap(map : FastNoiseLite, tileArray: Array, rect: Rect2, noiseRangeM
 					set_cell(Vector2i(x + widthOffset, y + heightOffset), 0, color )
 
 func get_color(layerTiles: Array, noiseVal : float, noiseRangeMin : float = -1, noiseRangeMax : float = 1) -> Vector2:
-	var range = noiseRangeMax - noiseRangeMin
+	var noiseRange = noiseRangeMax - noiseRangeMin
 	for tile in layerTiles:
-		if noiseVal < (range * tile.levelEnd) + noiseRangeMin: 
+		if noiseVal < (noiseRange * tile.levelEnd) + noiseRangeMin: 
 			return tile.tileSetCoord 
 	return Vector2(-1, -1)
 	
