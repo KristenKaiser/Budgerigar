@@ -31,3 +31,4 @@ import/fbx/enabled=false
 
 textures/canvas_textures/default_texture_filter=0
 driver/threads/thread_model=2
+environment/defaults/default_clear_color=Color(0.678431, 0.34902, 0.27451, 1)
