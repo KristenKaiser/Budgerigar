@@ -4,6 +4,7 @@ const speed = 5
 const minForce = -1.0
 const maxForce= 1.0
 const maxVelocity : Vector2 = Vector2(5,5)
+const negMaxVelocity : Vector2 = Vector2(-5, -5)
 const minVelocity = .5
 var id
 var body
@@ -11,6 +12,7 @@ var sprite
 var shadow
 var shadowOffset : Vector2 = Vector2(0, 140)
 var perception = 128
+var perceptionSquared = perception * perception
 var seperationPerception = 8
 var cohesionPerception = 128
 var alignPerception = 64
@@ -26,9 +28,10 @@ var autopilot = true
 var lastMousePosition = Vector2(64.0, 0.0)
 var baseAnimSpeed = 1.5
 var animScale = 0.25
+var id_mod_4
 
 func _ready():
-
+	id_mod_4 = id % 4
 	body = find_child("body")
 	sprite = find_child("sprite")
 	shadow = body.find_child("Shadow")
@@ -39,10 +42,10 @@ func _ready():
 	#sprite.set_speed_scale(0.9+(randf()*0.2))
 	
 func _process(delta):
-	if Engine.get_physics_frames() % 4 == id % 4:
+	if Engine.get_physics_frames() % 4 == id_mod_4:
 		acceleration = getAcceleration()
 		velocity += acceleration * delta * speed
-	velocity = velocity.clamp(-maxVelocity, maxVelocity)
+	velocity = velocity.clamp(negMaxVelocity, maxVelocity)
 	setRotation()
 	body.position += velocity
 	sprite.set_speed_scale(baseAnimSpeed-(velocity.length()*animScale)+(randf()*0.1))
@@ -58,7 +61,7 @@ func getAcceleration() -> Vector2:
 func findFriends() -> Array:
 	var flockArray = get_parent().array
 	return flockArray.filter(func(friend): 
-		return friend != self and body.position.distance_squared_to(friend.body.position) < perception * perception
+		return friend != self and body.position.distance_squared_to(friend.body.position) < perceptionSquared
 	)
 
 func align(friends):
