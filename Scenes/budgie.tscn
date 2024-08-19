@@ -1,9 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://r7gynpsoh4km"]
+[gd_scene load_steps=3 format=3 uid="uid://r7gynpsoh4km"]
 
 [ext_resource type="PackedScene" uid="uid://b8ier5ehakxa0" path="res://Sprites/animated_sprite_2d.tscn" id="1_tyenx"]
+[ext_resource type="Texture2D" uid="uid://8xgss5llhqmp" path="res://Sprites/budgieShadow.png" id="2_4qe2e"]
 
 [node name="Budgie" type="Node"]
 
 [node name="body" type="CharacterBody2D" parent="."]
+scale = Vector2(1.5, 1.5)
 
 [node name="sprite" parent="body" instance=ExtResource("1_tyenx")]
+
+[node name="Shadow" type="Sprite2D" parent="body/sprite"]
+z_index = -1
+position = Vector2(69.3333, 0)
+scale = Vector2(0.767, 0.767)
+texture = ExtResource("2_4qe2e")
