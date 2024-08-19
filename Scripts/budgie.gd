@@ -67,9 +67,10 @@ func findFriends() -> Array:
 func align(friends):
 	var steering = Vector2.ZERO
 	var total = 0
+	var alignPerceptionSquared = alignPerception * alignPerception
 	for friend in friends:
 		var dist = body.position.distance_squared_to(friend.body.position)
-		if abs(dist) < alignPerception:
+		if abs(dist) < alignPerceptionSquared:
 			steering += friend.body.velocity
 			total += 1
 	if total == 0: 
@@ -81,9 +82,10 @@ func align(friends):
 func cohesion(friends):
 	var steering = Vector2.ZERO
 	var total = 0
+	var cohesionPerceptionSquared = cohesionPerception * cohesionPerception
 	for friend in friends:
 		var dist = body.position.distance_squared_to(friend.body.position)
-		if abs(dist) < alignPerception:
+		if abs(dist) < cohesionPerceptionSquared:
 			steering += friend.body.position
 			total += 1
 	if total == 0: 
@@ -97,9 +99,10 @@ func cohesion(friends):
 func seperation(friends):
 	var steering = Vector2.ZERO
 	var total = 0
+	var seperationPerceptionSquared = seperationPerception * seperationPerception
 	for friend in friends:
 		var dist = body.position.distance_squared_to(friend.body.position)
-		if abs(dist) < seperationPerception:
+		if abs(dist) < seperationPerceptionSquared:
 			var diff = body.position - friend.body.position
 			diff = diff/dist
 			steering += diff
