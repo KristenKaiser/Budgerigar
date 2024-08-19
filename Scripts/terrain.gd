@@ -1,5 +1,6 @@
 extends TileMapLayer
 
+@onready var flock: Node = %Flock
 
 class TerrainTile: 
 	var name: String
@@ -15,14 +16,20 @@ class TerrainTile:
 		levelEnd = 0 
 		type = TileType.OTHER
 
+
+var isWorldGenerating : bool = true
+var worldGenerateThread : Thread
+var flockCenter : Vector2 = Vector2(0,0)
+
 var blankTile : TerrainTile
 
 enum TileType {WATER, DIRT, ROCK, BRUSH, OTHER}
 
-var width := 500
-var height := 500
+var readyWidth := 500
+var readyHeight := 500
 var dirtMap := FastNoiseLite.new()
 var WaterMap := FastNoiseLite.new()
+var pregenAreaMultiply = 1.5
 
 var terrainArray : Array = []
 var waterArray : Array = []
@@ -285,11 +292,9 @@ func invertArray(a : Array):
 
 func _ready() -> void:
 	defineTerrainItems()
-	#randomize()
-	
+	randomize()
 	dirtMap.noise_type = FastNoiseLite.TYPE_VALUE_CUBIC
 	dirtMap.frequency = .5
-	
 	WaterMap.noise_type = FastNoiseLite.TYPE_CELLULAR
 	WaterMap.frequency = .005
 	WaterMap.set_cellular_distance_function(FastNoiseLite.DISTANCE_EUCLIDEAN)
@@ -297,23 +302,50 @@ func _ready() -> void:
 	WaterMap.set_domain_warp_type(FastNoiseLite.DOMAIN_WARP_SIMPLEX)
 	WaterMap.set_domain_warp_amplitude(150)
 	WaterMap.set_domain_warp_frequency(.014)
-	
-	setRangeFill(dirtArray)
-	generateMap(dirtMap, dirtArray, -2, 2)
-	
 	waterArray = invertArray(waterArray)
-	setRangeFill(waterArray, .70, 1)
-	generateMap(WaterMap, waterArray, -1, -.09)
+	#setRangeFill(waterArray, .70, 1)
+	setRangeFill(waterArray, .50, 1)
+	setRangeFill(dirtArray)
+		 
+	#var startMapRect : Rect2 = Rect2(-readyWidth/2, -readyHeight/2, readyWidth, readyHeight)
+	#build_map(startMapRect)
+	
+	worldGenerateThread = Thread.new()
+	worldGenerateThread.start(_thread_function)
 
-func generateMap(map : FastNoiseLite, tileArray: Array, noiseRangeMin : float = -1, noiseRangeMax : float = 1, isInvert : bool = false):
+
+func build_map(rect : Rect2):
+	generateMap(WaterMap, waterArray, rect, -1, -.09)
+	generateMap(dirtMap, dirtArray, rect, -2, 2)
+
+func _thread_function():
+	while isWorldGenerating:
+		#print("generating world")
+		var viewportRect : Rect2 = get_viewport_rect()
+		#var generateSize : Vector2 = viewportRect.size * pregenAreaMultiply
+		#var viewportQuadratic : float = (generateSize.x + generateSize.y) / 2
+		#var generateOrgin : Vector2  = flock.getCenter() - (generateSize / 2)
+		#if abs(flockCenter.distance_to(flock.getCenter())) > (viewportQuadratic * .1) :
+			#print("generate")
+			#flockCenter = flock.getCenter()
+			#var generateRect : Rect2 = Rect2(generateOrgin, generateSize)
+			##build_map(generateRect)
+	
+
+func generateMap(map : FastNoiseLite, tileArray: Array, rect: Rect2, noiseRangeMin : float = -1, noiseRangeMax : float = 1, isInvert : bool = false):
+	var width = rect.size.x
+	var height = rect.size.y
+	var widthOffset = rect.position.x
+	var heightOffset = rect.position.y
 	for x in width:
 		for y in height:
-			var noiseVal = map.get_noise_2d(x, y)
-			var color = get_color(tileArray, noiseVal, noiseRangeMin, noiseRangeMax)
-			if isInvert:
-				color = -color
-			if color != Vector2(-1, -1):
-				set_cell(Vector2i(x, y), 0, color )
+			if !get_cell_tile_data(Vector2i(x + widthOffset, y + heightOffset)):
+				var noiseVal = map.get_noise_2d(x, y)
+				var color = get_color(tileArray, noiseVal, noiseRangeMin, noiseRangeMax)
+				if isInvert:
+					color = -color
+				if color != Vector2(-1, -1):
+					set_cell(Vector2i(x + widthOffset, y + heightOffset), 0, color )
 
 func get_color(layerTiles: Array, noiseVal : float, noiseRangeMin : float = -1, noiseRangeMax : float = 1) -> Vector2:
 	var range = noiseRangeMax - noiseRangeMin

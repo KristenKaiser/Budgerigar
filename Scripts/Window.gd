@@ -8,7 +8,7 @@ var yMin
 func _ready():
 	setWindowEdges()
 	
-func setWindowEdges():
+func setWindowEdges() :
 	var viewport = get_viewport()
 	var camera = viewport.get_camera_2d()
 	var rect = viewport.get_visible_rect()
