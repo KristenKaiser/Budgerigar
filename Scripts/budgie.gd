@@ -14,7 +14,7 @@ var shadowOffset : Vector2 = Vector2(0, 140)
 var perception = 128
 var perceptionSquared = perception * perception
 var seperationPerception = 8
-var cohesionPerception = 128
+var cohesionPerception = 64
 var alignPerception = 64
 var position
 var velocity 
@@ -29,6 +29,10 @@ var lastMousePosition = Vector2(64.0, 0.0)
 var baseAnimSpeed = 1.5
 var animScale = 0.25
 var id_mod_4
+
+# New variables for rubber band effect
+var rubberBandStrength = 0.5
+var rubberBandThreshold = 500  # Distance from center at which rubber band effect starts
 
 func _ready():
 	id_mod_4 = id % 4
@@ -53,10 +57,14 @@ func _process(delta):
 
 func getAcceleration() -> Vector2:
 	var friends = findFriends()
-	return (cohesion(friends).normalized() * cohesionStrength +
-			align(friends).normalized() * alignStrength +
-			seperation(friends).normalized() * seperationStrength +
-			chaseMouse().normalized() * mouseStrength).normalized()
+	var acc = Vector2.ZERO
+	acc += cohesion(friends).normalized() * cohesionStrength
+	acc += align(friends) .normalized() * alignStrength
+	acc += seperation(friends).normalized() * seperationStrength
+	acc += chaseMouse().normalized() * mouseStrength
+	acc += rubberBandEffect()  # Add rubber band effect
+	acc = acc.normalized()
+	return acc
 
 func findFriends() -> Array:
 	var flockArray = get_parent().array
@@ -130,6 +138,17 @@ func chaseMouse():
 	var randStrength = randf() * mouseStrength
 	steering = steering.clamp(Vector2(minForce * mouseStrength , minForce * mouseStrength ), Vector2(maxForce * mouseStrength , maxForce * mouseStrength ))
 	return steering
+
+func rubberBandEffect() -> Vector2:
+	var center = get_parent().getCenter()
+	var distanceToCenter = body.position.distance_to(center)
+	
+	if distanceToCenter > rubberBandThreshold:
+		var direction = (center - body.position).normalized()
+		var strength = (distanceToCenter - rubberBandThreshold) / rubberBandThreshold
+		return direction * strength * rubberBandStrength
+	else:
+		return Vector2.ZERO
 
 func setRotation():
 	body.rotation = velocity.angle() + deg_to_rad(90.0)
