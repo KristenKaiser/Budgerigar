@@ -32,7 +32,7 @@ var id_mod_4
 
 # New variables for rubber band effect
 var rubberBandStrength = 0.5
-var rubberBandThreshold = 500  # Distance from center at which rubber band effect starts
+var rubberBandThreshold = 501  # Distance from center at which rubber band effect starts
 
 func _ready():
 	id_mod_4 = id % 4
