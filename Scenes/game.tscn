@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://fxfdu55nrbn0"]
+[gd_scene load_steps=15 format=3 uid="uid://fxfdu55nrbn0"]
 
 [ext_resource type="Script" path="res://Scripts/Global.gd" id="1_u7i7d"]
 [ext_resource type="Script" path="res://Scripts/Window.gd" id="2_mlyd8"]
@@ -11,10 +11,12 @@
 [ext_resource type="Texture2D" uid="uid://bqqt4s61j6fpq" path="res://Sprites/testBackground/tree_noOut.png" id="9_3fbkj"]
 [ext_resource type="Texture2D" uid="uid://da22b1tn6itum" path="res://Sprites/terrainTiles.png" id="10_0jqfu"]
 [ext_resource type="Script" path="res://Scripts/terrain.gd" id="10_mbrvu"]
+[ext_resource type="Script" path="res://Scripts/text_edit.gd" id="12_qp3bx"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fqwnd"]
 texture = ExtResource("10_0jqfu")
 texture_region_size = Vector2i(8, 8)
+use_texture_padding = false
 0:0/0 = 0
 1:0/0 = 0
 0:1/0 = 0
@@ -90,5 +92,16 @@ texture = ExtResource("9_3fbkj")
 
 [node name="terrain" type="TileMapLayer" parent="."]
 z_index = -2
+scale = Vector2(3, 3)
 tile_set = SubResource("TileSet_rvxch")
+collision_enabled = false
 script = ExtResource("10_mbrvu")
+
+[node name="TextEdit" type="TextEdit" parent="."]
+offset_left = -403.0
+offset_top = -188.0
+offset_right = -155.0
+offset_bottom = -126.0
+text = "left click and hold the mouse 
+and the flock will follow"
+script = ExtResource("12_qp3bx")

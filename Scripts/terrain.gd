@@ -16,7 +16,7 @@ class TerrainTile:
 		levelEnd = 0 
 		type = TileType.OTHER
 
-
+var tilePixelWidth : int = 16
 var isWorldGenerating : bool = true
 var worldGenerateThread : Thread
 var flockCenter : Vector2 = Vector2(0,0)
@@ -24,6 +24,9 @@ var flockCenter : Vector2 = Vector2(0,0)
 #var blankTile : TerrainTile
 
 enum TileType {WATER, DIRT, ROCK, BRUSH, OTHER}
+
+var chunkSize :int = 512
+var filledChunkArray : Array[Vector2] = []
 
 var readyWidth := 500
 var readyHeight := 500
@@ -38,17 +41,12 @@ var greebleArray : Array = []
 
 
 
+
+
 func defineTerrainItems():
 	var tile
 	
-##BLANKTILE
-	#blankTile = TerrainTile.new()
-	#blankTile.name = "blank"
-	#blankTile.ratio = 0
-	#blankTile.tileSetCoord = Vector2(-1,-1)
-	#blankTile.type = TileType.OTHER
-	
-#Water 20%
+#Water 
 	tile = TerrainTile.new()
 	tile.name = "water0"
 	tile.ratio = .5
@@ -129,7 +127,7 @@ func defineTerrainItems():
 	terrainArray.push_back(tile)
 	waterArray.push_back(tile)
 	
-#DIRT 60%
+#DIRT
 	tile = TerrainTile.new()
 	tile.name = "dirt0"
 	tile.ratio = 1.0/8.0
@@ -202,7 +200,7 @@ func defineTerrainItems():
 	tile.type = TileType.OTHER
 	terrainArray.push_back(tile)
 	
-#ROCKS 5%
+#ROCKS
 	tile = TerrainTile.new()
 	tile.name = "rockD"
 	tile.ratio = .02
@@ -219,7 +217,7 @@ func defineTerrainItems():
 	terrainArray.push_back(tile)
 	greebleArray.push_back(tile)
 	
-# BUSH 20%
+# BUSH
 	tile = TerrainTile.new()
 	tile.name = "brushD"
 	tile.ratio = .08
@@ -307,48 +305,85 @@ func _ready() -> void:
 	WaterMap.set_domain_warp_amplitude(150)
 	WaterMap.set_domain_warp_frequency(.014)
 	waterArray = invertArray(waterArray)
-	#setRangeFill(waterArray, .70, 1)
-	setRangeFill(waterArray, .50, 1)
+	setRangeFill(waterArray, .70, 1)
 	setRangeFill(dirtArray)
-		 
-
-	var startMapRect : Rect2 = Rect2(-readyWidth/2.0 , -readyHeight/2.0, readyWidth, readyHeight)
-	build_map(startMapRect)
-
+	
+	for x in range(-2, 3):
+		for y in range(-2, 3):
+			draw_chunk(Vector2(x,y))
+			#print("chunk drawn:", x, ",", y)
+	
 
 	
 
 func _process(_delta: float) -> void:
-		var viewportRect : Rect2 = get_viewport().get_visible_rect()
-		var generateSize : Vector2 = viewportRect.size * pregenAreaMultiply
-		var viewportQuadratic : float = (generateSize.x + generateSize.y) / 2
-		var generateOrgin : Vector2  = flock.getCenter() - (generateSize / 2)
-		if abs(flockCenter.distance_to(flock.getCenter())) > (viewportQuadratic * .5) :
-			print("generate")
-			flockCenter = flock.getCenter()
-			var generateRect : Rect2 = Rect2(generateOrgin, generateSize)
-			build_map(generateRect)
+	var chunkSizeQuad = sqrt(pow(chunkSize * tilePixelWidth, 2)*2) * .5
+	if abs(flockCenter.distance_to(flock.getCenter())) > (chunkSizeQuad * .1) :
+		flockCenter = flock.getCenter()
+		var currentChunk: Vector2i = get_current_chunk_address()
+		var adjEmptyChunks : Array = get_adjacent_draw_status(currentChunk)
+		if adjEmptyChunks.size() > 0:
+			for chunk in adjEmptyChunks:
+				#print("draw chunk ", chunk)
+				draw_chunk(chunk)
 
 
-func build_map(rect : Rect2):
-	generateMap(WaterMap, waterArray, rect, -1, -.09)
-	generateMap(dirtMap, dirtArray, rect, -2, 2)
+func get_current_chunk_address() -> Vector2i:
+	var currentChunk : Vector2i = flock.getCenter() / (chunkSize * tilePixelWidth)
 
+	return currentChunk
+	
+func get_adjacent_draw_status(address : Vector2i) -> Array[Vector2i]:
+	var returnArray : Array[Vector2i] = []
+	var offsets : Array[Vector2i] = [\
+	Vector2(-2,1), Vector2(-1,1), Vector2(0,1), Vector2(1,1),\
+	Vector2(-2,1), Vector2(-1,0), Vector2(0,0), Vector2(1,0),\
+	Vector2(-2,-1), Vector2(-1,-1), Vector2(0,-1), Vector2(1,-1),\
+	Vector2(-2,-2), Vector2(-1,-2), Vector2(0,-2), Vector2(1,-2)]
+	
+	for offset in offsets:
+		if !is_chunk_drawn(address + offset):
+			returnArray.push_back(address + offset)
+	
+	#print("adjacent array")
+	#for obj in returnArray:
+		#print(obj)
+	
+	return returnArray
+
+
+func is_chunk_drawn(address : Vector2) -> bool :
+	filledChunkArray.sort()
+	var arraypos : int = filledChunkArray.bsearch(address)
+	if arraypos < filledChunkArray.size() && filledChunkArray[arraypos] == address:
+		return true
+	else: return false
+	
+func draw_chunk(address : Vector2):
+	filledChunkArray.push_back(address)
+	var chunk = get_chunk_rect(address)
+	generateMap(WaterMap, waterArray, chunk, -1, -.09)
+	generateMap(dirtMap, dirtArray, chunk, -2, 2)
+
+func get_chunk_rect(address : Vector2) -> Rect2:
+	var position : Vector2 = address * chunkSize
+	return Rect2(position, Vector2(chunkSize, chunkSize))
 
 func generateMap(map : FastNoiseLite, tileArray: Array, rect: Rect2, noiseRangeMin : float = -1, noiseRangeMax : float = 1, isInvert : bool = false):
 	var width : int = rect.size.x as int
 	var height : int = rect.size.y as int
-	var widthOffset : int = rect.position.x as int
-	var heightOffset : int  = rect.position.y as int
-	for x in width:
-		for y in height:
-			if !get_cell_tile_data(Vector2i(x + widthOffset, y + heightOffset)):
+	var xPos : int = rect.position.x as int
+	var yPos : int  = rect.position.y as int
+	
+	for x in range(xPos, xPos + width):
+		for y in range(yPos, yPos + width):
+			if !get_cell_tile_data(Vector2i(x, y)):
 				var noiseVal = map.get_noise_2d(x, y)
 				var color = get_color(tileArray, noiseVal, noiseRangeMin, noiseRangeMax)
 				if isInvert:
 					color = -color
 				if color != Vector2(-1, -1):
-					set_cell(Vector2i(x + widthOffset, y + heightOffset), 0, color )
+					set_cell(Vector2i(x, y), 0, color )
 
 func get_color(layerTiles: Array, noiseVal : float, noiseRangeMin : float = -1, noiseRangeMax : float = 1) -> Vector2:
 	var noiseRange = noiseRangeMax - noiseRangeMin

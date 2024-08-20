@@ -4,7 +4,7 @@ extends Node
 const maxFlockSize = 256
 const spawnDistanceHalf_I = 9
 const bird_O = preload("res://Scenes/budgie.tscn")
-"res://Scenes/node_2d_budgie.tscn"
+#"res://Scenes/node_2d_budgie.tscn"
 const birdScript = preload("res://Scripts/budgie.gd")
 const xWindowMarginRatio = 0.25
 const yWindowMarginRatio = 0.25
@@ -31,8 +31,8 @@ func createBirds(id):
 	var inst = bird_O.instantiate()
 	inst.set_script(birdScript)
 	inst.id = id
-	add_child(inst)
 	array.push_back(inst)
+	add_child(inst)
 	inst.body.position = randPosition()
 	inst.position = inst.body.position
 	inst.body.set_velocity(randVelocity())

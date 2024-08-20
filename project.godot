@@ -13,6 +13,13 @@ config_version=5
 config/name="Budgerigar"
 run/main_scene="res://Scenes/game.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
+boot_splash/image="res://splash screen.png"
+boot_splash/use_filter=false
+boot_splash/minimum_display_time=3
+
+[display]
+
+window/size/mode=2
 
 [dotnet]
 

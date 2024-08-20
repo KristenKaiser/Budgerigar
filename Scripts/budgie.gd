@@ -1,6 +1,6 @@
 extends Node
 
-const speed = 5
+const speed = 10
 const minForce = -1.0
 const maxForce= 1.0
 const maxVelocity : Vector2 = Vector2(5,5)
@@ -14,7 +14,7 @@ var shadowOffset : Vector2 = Vector2(0, 140)
 var perception = 128
 var perceptionSquared = perception * perception
 var seperationPerception = 8
-var cohesionPerception = 64
+var cohesionPerception = 128
 var alignPerception = 64
 var position
 var velocity 
@@ -27,11 +27,11 @@ var oldAcceleration = Vector2.ZERO
 var autopilot = true
 var lastMousePosition = Vector2(64.0, 0.0)
 var baseAnimSpeed = 1.5
-var animScale = 0.25
+var animScale = 0.5
 var id_mod_4
 
 # New variables for rubber band effect
-var rubberBandStrength = 0.5
+var rubberBandStrength = 0.4
 var rubberBandThreshold = 500  # Distance from center at which rubber band effect starts
 
 func _ready():
@@ -39,9 +39,9 @@ func _ready():
 	body = find_child("body")
 	sprite = find_child("sprite")
 	shadow = body.find_child("Shadow")
-	
 	position = Vector2.ZERO
 	velocity = Vector2.ZERO
+	
 	
 	#sprite.set_speed_scale(0.9+(randf()*0.2))
 	
@@ -52,7 +52,7 @@ func _process(delta):
 	velocity = velocity.clamp(negMaxVelocity, maxVelocity)
 	setRotation()
 	body.position += velocity
-	sprite.set_speed_scale(baseAnimSpeed-(velocity.length()*animScale)+(randf()*0.1))
+	sprite.set_speed_scale(baseAnimSpeed-max((velocity.length()*animScale)+(randf()*0.1),0.1))
 	moveShadow()
 
 func getAcceleration() -> Vector2:
