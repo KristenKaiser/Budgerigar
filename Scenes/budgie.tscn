@@ -6,7 +6,13 @@
 [node name="Budgie" type="Node"]
 
 [node name="body" type="CharacterBody2D" parent="."]
+z_index = 1
+y_sort_enabled = true
 scale = Vector2(1.5, 1.5)
+
+[node name="Marker2D" type="Marker2D" parent="body"]
+top_level = true
+scale = Vector2(0.666667, 0.666667)
 
 [node name="sprite" parent="body" instance=ExtResource("1_tyenx")]
 

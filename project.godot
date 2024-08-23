@@ -30,6 +30,10 @@ project/assembly_name="Budgerigar"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/map_tile_provider/plugin.cfg")
+
 [filesystem]
 
 import/fbx/enabled=false

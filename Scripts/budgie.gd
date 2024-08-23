@@ -52,7 +52,7 @@ func _process(delta):
 	velocity = velocity.clamp(negMaxVelocity, maxVelocity)
 	setRotation()
 	body.position += velocity
-	sprite.set_speed_scale(baseAnimSpeed-max((velocity.length()*animScale)+(randf()*0.1),0.1))
+	sprite.set_speed_scale(baseAnimSpeed-min(velocity.length()*animScale,(baseAnimSpeed-0.1))+(randf()*0.1))
 	moveShadow()
 
 func getAcceleration() -> Vector2:
